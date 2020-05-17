@@ -1,5 +1,5 @@
 FROM gentoo/stage3-amd64:latest
 
-COPY target/debug/dotfiles /bin/dotfiles
+COPY target/release/dotfiles /bin/dotfiles
 
-CMD ["/bin/dotfiles"]
+CMD [ "/bin/bash" ]
