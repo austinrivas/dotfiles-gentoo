@@ -1,7 +1,5 @@
 use dirs;
 use std::fs;
-use std::time;
-use std::thread;
 use std::path::Path;
 
 mod dotfiles;
@@ -30,23 +28,29 @@ fn main() {
 
     assert!(Path::new(&home_path).exists());
 
-    let cmd = String::from("echo");
-    let args = vec!["this is a stream"];
+    let pacman = String::from("pacman");
 
-    let stream = Command::new(&cmd, &args);
-    let mut process = stream.stream();
+    let sync_package_db = Command::new(
+        &pacman,
+        &vec!["-Sy"] 
+    );
 
-    let duration = time::Duration::from_millis(5000);
-    thread::sleep(duration);
+    let install_git = Command::new(
+        &pacman,
+        &vec!["-S", "git", "--noconfirm"]
+    );
 
-    let result = process.kill();
-    assert!(result.is_ok());
+    println!("Syncronizing package db.");
 
-    let cmd = String::from("echo");
-    let args = vec!["hello"];
+    let output = sync_package_db.run();
 
-    let task = Command::new(&cmd, &args);
-    let output = task.run();
+    output.log();
+
+    assert!(output.success());
+
+    println!("Installing git.");
+
+    let output = install_git.run();
 
     output.log();
 
