@@ -1,18 +1,14 @@
 use dirs;
-use dotfiles::shell::Command;
 use std::fs;
 use std::time;
 use std::thread;
 use std::path::Path;
 
+mod dotfiles;
+use dotfiles::shell::Command;
+use dotfiles::file::Asset;
 
-use rust_embed::RustEmbed;
-
-#[derive(RustEmbed)]
-#[folder = "assets/"]
-struct Asset;
-
-fn main() {
+fn main() { 
     let test_sh = Asset::get("test.sh").unwrap();
     println!("{:?}", std::str::from_utf8(test_sh.as_ref()));
 
