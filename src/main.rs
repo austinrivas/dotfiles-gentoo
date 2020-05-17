@@ -23,7 +23,6 @@ fn main() {
 
     home_path.push("some/dir");
 
-
     fs::create_dir_all(&home_path)
         .expect("could not create dir");
 
@@ -31,8 +30,8 @@ fn main() {
 
     assert!(Path::new(&home_path).exists());
 
-    let cmd = String::from("ping");
-    let args = vec!["www.google.com"];
+    let cmd = String::from("echo");
+    let args = vec!["this is a stream"];
 
     let stream = Command::new(&cmd, &args);
     let mut process = stream.stream();

@@ -1,4 +1,4 @@
-FROM gentoo/stage3-amd64:latest
+FROM archlinux:latest
 
 COPY target/release/dotfiles /bin/dotfiles
 
