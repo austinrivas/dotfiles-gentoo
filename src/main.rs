@@ -4,16 +4,8 @@ use std::path::Path;
 
 mod dotfiles;
 use dotfiles::shell::Command;
-use dotfiles::file::Asset;
 
-fn main() { 
-    let test_sh = Asset::get("test.sh").unwrap();
-    println!("{:?}", std::str::from_utf8(test_sh.as_ref()));
-
-    for file in Asset::iter() {
-        println!("{}", file.as_ref());
-    }
-
+fn create_dir() {
     let mut home_path = match dirs::home_dir() {
         Some(path) => path,
         None => panic!("home_dir is not defined in this environment")
@@ -27,17 +19,12 @@ fn main() {
     println!("created directory: {:?}", &home_path);
 
     assert!(Path::new(&home_path).exists());
+}
 
-    let pacman = String::from("pacman");
-
+fn sync_package_repos(package_manager: &str) {
     let sync_package_db = Command::new(
-        &pacman,
+        package_manager,
         &vec!["-Sy"] 
-    );
-
-    let install_git = Command::new(
-        &pacman,
-        &vec!["-S", "git", "--noconfirm"]
     );
 
     println!("Syncronizing package db.");
@@ -47,6 +34,13 @@ fn main() {
     output.log();
 
     assert!(output.success());
+}
+
+fn install_git(package_manager: &str) {
+    let install_git = Command::new(
+        package_manager,
+        &vec!["-S", "git", "--noconfirm"]
+    );
 
     println!("Installing git.");
 
@@ -55,4 +49,14 @@ fn main() {
     output.log();
 
     assert!(output.success());
+}
+
+fn main() {
+    create_dir();
+
+    let package_manager = String::from("pacman");
+
+    sync_package_repos(&package_manager);
+
+    install_git(&package_manager);
 }
