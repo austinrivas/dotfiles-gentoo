@@ -1,12 +1,10 @@
-use rust_embed::RustEmbed;
-
-#[derive(RustEmbed)]
-#[folder = "assets/"]
-pub struct Asset;
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use rust_embed::RustEmbed;
+
+    #[derive(RustEmbed)]
+    #[folder = "test_assets/"]
+    pub struct Asset;
 
     #[test]
     fn read_file() {
@@ -34,6 +32,13 @@ mod tests {
             dir.push(file);
         }
 
-        assert_eq!(dir, vec!["test.toml", "test.sh", "test"]);
+        assert_eq!(dir, vec![
+            "test_config.toml", 
+            "test_binary", 
+            "config.toml", 
+            "test.toml", 
+            "test.sh", 
+            "stored_config.toml"
+        ]);
     }
 }
