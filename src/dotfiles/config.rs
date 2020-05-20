@@ -18,6 +18,7 @@ impl Default for Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs;
 
     #[test]
     fn load_config() {
@@ -47,6 +48,9 @@ mod tests {
     fn default_config() {
         let cfg: Config = confy::load_path("./test_assets/default_config.toml")
             .expect("could not load dotfiles config");
+
+        fs::remove_file("./test_assets/default_config.toml")
+            .expect("could not remove file");
 
         assert_eq!(cfg.version, 3);
         assert_eq!(cfg.api_key, "default");
