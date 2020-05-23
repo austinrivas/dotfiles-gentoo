@@ -87,7 +87,7 @@ enum SubCommand {
 #[derive(Clap)]
 struct Test {
     /// Print debug info
-    #[clap(short)]
+    #[clap(short, long)]
     debug: bool
 }
 
@@ -95,7 +95,7 @@ struct Test {
 #[derive(Clap)]
 struct Install {
     /// Print debug info
-    #[clap(short)]
+    #[clap(short, long)]
     debug: bool
 }
 
