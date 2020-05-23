@@ -61,14 +61,21 @@ fn old_main() {
     install_git(&package_manager);
 }
 
-use clap::App;
+use clap::{App, Arg};
+
+// check out
+// https://philippkeller.github.io/rexpect/rexpect/index.html
+// https://github.com/assert-rs/assert_cmd
+// https://github.com/clap-rs/clap
 
 fn main() {
-    // This example shows how to create an application with several arguments using usage strings, which can be
-    // far less verbose that shown in 01b_QuickExample.rs, but is more readable. The downside is you cannot set
-    // the more advanced configuration options using this method (well...actually you can, you'll see ;) )
+    // This method shows the traditional, and slightly more configurable way to set up arguments. This method is
+    // more verbose, but allows setting more configuration options, and even supports easier dynamic generation.
     //
-    // The example below is functionally identical to the 01b_quick_example.rs and 01c_quick_example.rs
+    // The example below is functionally identical to the 01a_quick_example.rs and 01c_quick_example.rs
+    //
+    // *NOTE:* You can actually achieve the best of both worlds by using Arg::from() (instead of Arg::new())
+    // and *then* setting any additional properties.
     //
     // Create an application with 5 possible arguments (2 auto generated) and 2 subcommands (1 auto generated)
     //    - A config file
@@ -96,13 +103,32 @@ fn main() {
         .version("1.0")
         .author("Kevin K. <kbknapp@gmail.com>")
         .about("Does awesome things")
-        .arg("-c, --config=[FILE] 'Sets a custom config file'")
-        .arg("<output> 'Sets an optional output file'")
-        .arg("-d... 'Turn debugging information on'")
+        .arg(
+            Arg::new("config")
+                .short('c')
+                .long("config")
+                .value_name("FILE")
+                .about("Sets a custom config file")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::new("output")
+                .about("Sets an optional output file")
+                .index(1)
+                .value_name("INPUT_FILE")
+                .required(true)
+                .validator(is_png),
+        )
+        .arg(
+            Arg::new("debug")
+                .short('d')
+                .multiple(true)
+                .about("Turn debugging information on"),
+        )
         .subcommand(
             App::new("test")
                 .about("does testing things")
-                .arg("-l, --list 'lists test values'"),
+                .arg(Arg::new("list").short('l').about("lists test values")),
         )
         .get_matches();
 
@@ -117,7 +143,7 @@ fn main() {
 
     // You can see how many times a particular flag or argument occurred
     // Note, only flags can have multiple occurrences
-    match matches.occurrences_of("d") {
+    match matches.occurrences_of("debug") {
         0 => println!("Debug mode is off"),
         1 => println!("Debug mode is kind of on"),
         2 => println!("Debug mode is on"),
@@ -136,4 +162,21 @@ fn main() {
         }
     }
 
+    // Continued program logic goes here...
+}
+
+
+fn is_png(val: &str) -> Result<(), String> {
+    // val is the argument value passed in by the user
+    // val has type of String.
+    if val.ends_with(".png") {
+        Ok(())
+    } else {
+        // clap automatically adds "error: " to the beginning
+        // of the message.
+        Err(String::from("the file format must be png."))
+    }
+    // Of course, you can do more complicated validation as
+    // well, but for the simplicity, this example only checks
+    // if the value passed in ends with ".png" or not.
 }
