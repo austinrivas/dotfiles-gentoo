@@ -51,16 +51,6 @@ fn install_git(package_manager: &str) {
     assert!(output.success());
 }
 
-fn old_main() {
-    create_dir();
-
-    let package_manager = String::from("pacman");
-
-    sync_package_repos(&package_manager);
-
-    install_git(&package_manager);
-}
-
 // (Full example with detailed comments in examples/01d_quick_example.rs)
 //
 // This example demonstrates clap's full 'custom derive' style of creating arguments which is the
@@ -89,11 +79,21 @@ struct Opts {
 enum SubCommand {
     #[clap(version = "1.3", author = "Someone E. <someone_else@other.com>")]
     Test(Test),
+    #[clap(version = "0.1", author = "Someone E. <someone_else@other.com>")]
+    Install(Install)
 }
 
 /// A subcommand for controlling testing
 #[derive(Clap)]
 struct Test {
+    /// Print debug info
+    #[clap(short)]
+    debug: bool
+}
+
+/// A subcommand for installing deps
+#[derive(Clap)]
+struct Install {
     /// Print debug info
     #[clap(short)]
     debug: bool
@@ -124,6 +124,15 @@ fn main() {
             } else {
                 println!("Printing normally...");
             }
+        },
+        SubCommand::Install(i) => {
+            if i.debug {
+                println!("Printing debug info...");
+            }
+            
+            let package_manager = String::from("pacman");
+            sync_package_repos(&package_manager);
+            install_git(&package_manager);
         }
     }
 
